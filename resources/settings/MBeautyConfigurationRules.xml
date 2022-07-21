@@ -187,7 +187,7 @@
    <SpecialRules>
       <SpecialRule>
          <Key>MaximalNewLines</Key>
-         <Value>2</Value>
+         <Value>1</Value>
       </SpecialRule>
       <SpecialRule>
          <Key>SectionPrecedingNewlineCount</Key>
@@ -215,11 +215,11 @@
       </SpecialRule>
       <SpecialRule>
          <Key>CellArrayIndexing_ArithmeticOperatorPadding</Key>
-         <Value>0</Value>
+         <Value>1</Value>
       </SpecialRule>
       <SpecialRule>
          <Key>MatrixIndexing_ArithmeticOperatorPadding</Key>
-         <Value>0</Value>
+         <Value>1</Value>
       </SpecialRule>
       <SpecialRule>
          <Key>AllowMultipleStatementsPerLine</Key>
@@ -243,7 +243,7 @@
       </SpecialRule>
       <SpecialRule>
          <Key>IndentationCount</Key>
-         <Value>4</Value>
+         <Value>2</Value>
       </SpecialRule>
 	  <SpecialRule>
          <Key>Indentation_TrimBlankLines</Key>
