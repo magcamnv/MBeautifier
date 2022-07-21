@@ -29,6 +29,24 @@ classdef MBeautify
     %% Public API
     
     methods (Static = true)
+      function automationGuard(func)
+          % Helper for running given function from commandline.
+          % This is for using '-wait -r <command>' like '-wait -batch <command>': it will exit Matlab
+          % (which -r normally doesn't do) with code 1 in case of any exception, else 0.
+          % Reason: the formatting functions below open new editor rwindows, so when running with '-batch' the
+          % effect is that for each file a toplevel window gets opened which usually is on top of all other
+          % windows of the OS desktop environment making it quite impractical to do anything else with the
+          % computer while formatting runs. Using '-r' doesn't have that problem since it shows the full
+          % Matlab IDE and will dock new editor windows, moreover this is slightly faster.
+          % Note: use '-logfile' to retrieve output.
+          try
+            func();
+            exit(0);
+          catch e
+            disp(e);
+          end
+          exit(1);
+        end
         
         function formatFileNoEditor(file, outFile)
             % Format file outside of editor
@@ -94,6 +112,37 @@ classdef MBeautify
             end
         end
         
+        function formatMultipleFiles(files)
+            % Format multiple files in-place, using editor.
+            for i = 1:numel(files)
+                MBeautify.formatFile(files{i}, files{i});
+            end
+        end
+
+        function [formatted] = testFormatting(file)
+            % Test if file is formatted, returning true if that is the case.
+            tempFile = tempname;
+            MBeautify.formatFile(file, tempFile);
+            formatted = strcmp(fileread(file), fileread(tempFile));
+            delete(tempFile);            
+        end
+
+        function [formatted] = testMultipleFormatting(files, outputFun)
+            % Test formatting of multiple files.
+            % Returns true if all formatted.
+            % Otherwise false, and each file path is passed to outputFunc if that was passed.
+            formatted = true;
+            withOutput = nargin > 1;
+            for i=1:numel(files)
+                if ~MBeautify.testFormatting(files{i})
+                    formatted = false;
+                    if withOutput
+                      outputFun(files{i});
+                    end
+                end
+            end
+        end
+
         function formatFiles(directory, fileFilter, recurse, editor)
             % Format multiple files in-place. Supports file type filtering and subfolder recursion
             % function formatFiles(directory, fileFilter, recurse)
