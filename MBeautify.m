@@ -343,64 +343,21 @@ classdef MBeautify
                 com.mathworks.services.Prefs.setStringPref('EditorMFunctionIndentType', originalPreference);
             end
             
-            indentationCharacter = configuration.specialRule('IndentationCharacter').Value;
-            indentationCount = configuration.specialRule('IndentationCount').ValueAsDouble;
             makeBlankLinesEmpty = configuration.specialRule('Indentation_TrimBlankLines').ValueAsDouble;
             
-            if strcmpi(indentationCharacter, 'white-space') && indentationCount == 4 && ~makeBlankLinesEmpty
+            if  ~makeBlankLinesEmpty
                 return
-            end
-            
-            if strcmpi(indentationCharacter, 'white-space')
-                regexIndentCharacter = ' ';
-            elseif strcmpi(indentationCharacter, 'tab')
-                regexIndentCharacter = '\t';
-            else
-                warning('MBeautifier:IllegalSetting:IndentationCharacter', 'MBeautifier: The indentation character must be set to "white-space" or "tab". MBeautifier using MATLAB defaults.');
-                regexIndentCharacter = ' ';
-                indentationCount = 4;
-            end
-            
-            neededIndentation = regexIndentCharacter;
-            for i = 2:indentationCount
-                neededIndentation = [neededIndentation, regexIndentCharacter];
             end
             
             newLine = MBeautifier.Constants.NewLine;
             textArray = regexp(editorPage.Text, newLine, 'split');
             
-            skipIndentation = strcmpi(indentationCharacter, 'white-space') && indentationCount == 4;
-            
             for i = 1:numel(textArray)
                 cText = textArray{i};
-                if ~skipIndentation
-                    [~, ~, whiteSpaceCount] = regexp(cText, '^( )+', 'match');
-                    if isempty(whiteSpaceCount)
-                        whiteSpaceCount = 0;
-                    end
-                    
-                    amountOfReplace = floor(whiteSpaceCount/4);
-                    if amountOfReplace == 0
-                        continue
-                    end
-                    
-                    searchString = '    ';
-                    replaceString = neededIndentation;
-                    for iAmount = 2:amountOfReplace
-                        searchString = [searchString, '    '];
-                        replaceString = [replaceString, neededIndentation];
-                    end
-                    
-                    cText = regexprep(cText, ['^', searchString], replaceString);
+                trimmedLine = strtrim(cText);
+                if isempty(trimmedLine)
+                    cText = trimmedLine;
                 end
-                
-                if makeBlankLinesEmpty
-                    trimmedLine = strtrim(cText);
-                    if isempty(trimmedLine)
-                        cText = trimmedLine;
-                    end
-                end
-                
                 textArray{i} = cText;
             end
             
