@@ -47,7 +47,18 @@ classdef MBeautify
           end
           exit(1);
         end
-        
+
+        function setMatlabIndentSettings(numCharacters, useSpaces)
+            % Configure the 'Matlab Editor/Debugger Tab Preferences' preferences.
+            % These are used when indenting via the Matlab editor by MBeautify; which also means there's a
+            % bit of a mismatch because the tabs/spaces entrie in MBeautier's own configuration are ignored then.
+            % So this is left as a separate utility function now, to maintain backwards compatible, as opposed to
+            % e.g. setting the preferences based upon the configuration.
+            com.mathworks.services.Prefs.setIntegerPref('EditorSpacesPerTab', numCharacters)
+            com.mathworks.services.Prefs.setIntegerPref('EditorSpacesPerIndent', numCharacters)
+            com.mathworks.services.Prefs.setBooleanPref('EditorTabToSpaces', useSpaces)
+        end
+
         function formatFileNoEditor(file, outFile)
             % Format file outside of editor
             % function formatFileNoEditor(file, outFile)
